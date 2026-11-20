@@ -28,6 +28,8 @@ torch.set_num_threads(1)
 MU, SD = np.array(cfg["mu"], np.float32), np.array(cfg["sd"], np.float32)
 N_PARAMS = sum(p.numel() for p in net.parameters())
 
+for i, layer in enumerate(net.net):
+    print(i, layer)
 
 class Reading(BaseModel):
     # TODO Mission 3: a doorbell will send you glitches like the ones you found in Mission 1.

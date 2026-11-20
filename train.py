@@ -41,8 +41,11 @@ idx = rng.permutation(len(df)); n_val = len(df) // 5
 val, tr = df.iloc[idx[:n_val]], df.iloc[idx[n_val:]]
 X, y = tr[FEATURES].to_numpy(np.float32), tr.days_left.to_numpy(np.float32)
 Xv, yv = val[FEATURES].to_numpy(np.float32), val.days_left.to_numpy(np.float32)
-# TODO Mission 2: normalisation. Why must mu and sd come from the TRAINING rows only?
-mu, sd = np.zeros(X.shape[1], np.float32), np.ones(X.shape[1], np.float32)
+# TODO Mission 2: normalisation. Why must mu and sd come from the TRAINING rows only? - To prevent data leakage
+mu = np.mean(X, axis=0)
+sd = np.std(X, axis=0)
+
+
 
 mae = lambda p, t: float(np.mean(np.abs(p - t)))
 print(f"baseline (predict the mean): {mae(np.full_like(yv, y.mean()), yv):.2f} days")
@@ -62,27 +65,6 @@ predictions = train_mat_val @ coefficients
 print(f"baseline (linear regression): {mae(predictions, yv):.2f} days")
 
 ## The mean prediction baseline achieved a validation MAE of 57.27 days. Linear regression using NumPy's least-squares method achieved 22.84 days, reducing the validation error by approximately 60.1%. This indicates that the input features contain useful predictive information.
-
-# Plot predicted vs actual values
-plt.figure(figsize=(8, 6))
-
-plt.scatter(yv, predictions, alpha=0.6)
-
-# Perfect prediction reference line
-plt.plot(
-    [yv.min(), yv.max()],
-    [yv.min(), yv.max()],
-    'r--',
-    label="Perfect prediction"
-)
-
-plt.xlabel("Actual days_left")
-plt.ylabel("Predicted days_left")
-plt.title("Linear Regression: Predicted vs Actual")
-plt.legend()
-plt.grid(True)
-plt.tight_layout()
-plt.show()
 
 torch.manual_seed(0)
 net = BatteryNet(hidden)
